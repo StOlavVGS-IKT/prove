@@ -1,0 +1,11 @@
+version: '2.0'
+
+services:
+    Website1:
+        image: ghcr.io/StOlavVGS-IKT/prove:latest 
+        deploy:
+        labels: [com.centurylinklabs.watchtower.enable=true]
+        container_name: Prove_webside
+        restart: always
+        ports:
+            - "8088:80" #Change first port if using nginx
