@@ -61,14 +61,25 @@
             document.execCommand("fontSize", false, size);
         }
 
-        // Download as DOCX with formatting
+        // Get today's date in YYYY-MM-DD format
+        function getFormattedDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, "0");
+            const dd = String(today.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Download as DOCX with today's date in filename
         function downloadDocx() {
             const content = `<html><head><meta charset='utf-8'></head><body>${editor.innerHTML}</body></html>`;
             const blob = window.htmlDocx.asBlob(content);
             const link = document.createElement("a");
 
+            const filename = `prove-${getFormattedDate()}.docx`;
             link.href = URL.createObjectURL(blob);
-            link.download = "document.docx";
+            link.download = filename;
+
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
