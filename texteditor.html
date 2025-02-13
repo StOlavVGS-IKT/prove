@@ -20,12 +20,12 @@
 </head>
 <body>
 
-    <h2>Simple Text Editor</h2>
+    <h2>Prøve tekst editor</h2>
     
     <!-- Formatting Toolbar -->
     <div class="toolbar">
-        <button onclick="formatText('bold')">Bold</button>
-        <button onclick="formatText('italic')">Italic</button>
+        <button onclick="formatText('bold')">Fet tekst</button>
+        <button onclick="formatText('italic')">Kursiv tekst</button>
         <button onclick="formatText('underline')">Underline</button>
     </div>
 
@@ -33,12 +33,12 @@
     <div id="editor" class="editor" contenteditable="true"></div>
 
     <br>
-    <button onclick="downloadDocx()">Download as DOCX</button>
+    <button onclick="downloadDocx()">Last ned DOCX</button>
 
     <script>
         // Load saved content
         const editor = document.getElementById("editor");
-        editor.innerHTML = localStorage.getItem("textEditorContent") || "Start typing here...";
+        editor.innerHTML = localStorage.getItem("textEditorContent") || "Her kan du skrive";
 
         // Save content in local storage
         editor.addEventListener("input", () => {
