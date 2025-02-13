@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prøve Tekst Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.22.2/docxtemplater.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         .editor { 
@@ -82,16 +81,16 @@
             
             const zip = new JSZip();
 
-            // Opprett mappen for DOCX-strukturen
+            // Opprett DOCX-strukturen
             const wordFolder = zip.folder("word");
 
-            // Legg til XML-filen som representerer innholdet i dokumentet
+            // Legg til document.xml med innholdet
             wordFolder.file("document.xml", generateDocXml(content));
 
             // Legg til [Content_Types].xml
             zip.file("[Content_Types].xml", generateContentTypesXml());
 
-            // Generer zip-filen og last den ned
+            // Generer ZIP-fil og last den ned
             zip.generateAsync({ type: "blob" }).then(function(content) {
                 const filename = `prove-${getFormattedDate()}.docx`;
                 const link = document.createElement("a");
@@ -103,7 +102,7 @@
             });
         }
 
-        // XML-innhold for DOCX-fil
+        // XML-innhold for document.xml
         function generateDocXml(content) {
             return `
                 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
@@ -118,7 +117,7 @@
             `;
         }
 
-        // XML for ContentTypes i DOCX-fil
+        // XML for [Content_Types].xml
         function generateContentTypesXml() {
             return `
                 <?xml version="1.0" encoding="UTF-8"?>
