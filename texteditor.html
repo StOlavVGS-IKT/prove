@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prøve Tekst Editor</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.1/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
         .editor { 
@@ -61,23 +61,17 @@
             document.execCommand("fontSize", false, size);
         }
 
-        // Download as DOCX
+        // Download as DOCX with formatting
         function downloadDocx() {
-            const { Document, Packer, Paragraph } = window.docx;
-            const content = editor.innerHTML.replace(/<br>/g, "\n");
+            const content = `<html><head><meta charset='utf-8'></head><body>${editor.innerHTML}</body></html>`;
+            const blob = window.htmlDocx.asBlob(content);
+            const link = document.createElement("a");
 
-            const doc = new Document({
-                sections: [{
-                    children: [new Paragraph({ text: content })],
-                }],
-            });
-
-            Packer.toBlob(doc).then(blob => {
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "document.docx";
-                link.click();
-            });
+            link.href = URL.createObjectURL(blob);
+            link.download = "document.docx";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 
