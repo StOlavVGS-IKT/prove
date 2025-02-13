@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text Editor</title>
+    <title>Prøve Tekst Editor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.1/docx.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
@@ -14,8 +14,9 @@
             border: 1px solid #ccc; 
             padding: 10px; 
             outline: none;
+            white-space: pre-wrap;
         }
-        .toolbar button { margin: 5px; }
+        .toolbar button, .toolbar select { margin: 5px; padding: 5px; }
     </style>
 </head>
 <body>
@@ -24,9 +25,18 @@
     
     <!-- Formatting Toolbar -->
     <div class="toolbar">
-        <button onclick="formatText('bold')">Fet tekst</button>
-        <button onclick="formatText('italic')">Kursiv tekst</button>
-        <button onclick="formatText('underline')">Underline</button>
+        <button onclick="document.execCommand('bold', false, null)">Fet</button>
+        <button onclick="document.execCommand('italic', false, null)">Kursiv</button>
+        <button onclick="document.execCommand('underline', false, null)">Understreket</button>
+        
+        <select onchange="formatSize(this.value)">
+            <option value="3">Normal</option>
+            <option value="5">Overskrift</option>
+            <option value="2">Liten tekst</option>
+        </select>
+
+        <button onclick="document.execCommand('insertUnorderedList', false, null)">• Punktliste</button>
+        <button onclick="document.execCommand('insertOrderedList', false, null)">1. Nummerert liste</button>
     </div>
 
     <!-- Editable Text Area -->
@@ -36,27 +46,29 @@
     <button onclick="downloadDocx()">Last ned DOCX</button>
 
     <script>
-        // Load saved content
         const editor = document.getElementById("editor");
-        editor.innerHTML = localStorage.getItem("textEditorContent") || "Her kan du skrive";
+
+        // Load saved content
+        editor.innerHTML = localStorage.getItem("textEditorContent") || "Her kan du skrive...";
 
         // Save content in local storage
         editor.addEventListener("input", () => {
             localStorage.setItem("textEditorContent", editor.innerHTML);
         });
 
-        // Apply formatting
-        function formatText(command) {
-            document.execCommand(command, false, null);
+        // Change text size
+        function formatSize(size) {
+            document.execCommand("fontSize", false, size);
         }
 
         // Download as DOCX
         function downloadDocx() {
             const { Document, Packer, Paragraph } = window.docx;
+            const content = editor.innerHTML.replace(/<br>/g, "\n");
 
             const doc = new Document({
                 sections: [{
-                    children: [new Paragraph({ text: editor.innerText })],
+                    children: [new Paragraph({ text: content })],
                 }],
             });
 
