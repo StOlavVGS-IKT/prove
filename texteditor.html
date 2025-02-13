@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.1/docx.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .editor { 
+            width: 80%; 
+            min-height: 300px; 
+            margin: 20px auto; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            outline: none;
+        }
+        .toolbar button { margin: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>Simple Text Editor</h2>
+    
+    <!-- Formatting Toolbar -->
+    <div class="toolbar">
+        <button onclick="formatText('bold')">Bold</button>
+        <button onclick="formatText('italic')">Italic</button>
+        <button onclick="formatText('underline')">Underline</button>
+    </div>
+
+    <!-- Editable Text Area -->
+    <div id="editor" class="editor" contenteditable="true"></div>
+
+    <br>
+    <button onclick="downloadDocx()">Download as DOCX</button>
+
+    <script>
+        // Load saved content
+        const editor = document.getElementById("editor");
+        editor.innerHTML = localStorage.getItem("textEditorContent") || "Start typing here...";
+
+        // Save content in local storage
+        editor.addEventListener("input", () => {
+            localStorage.setItem("textEditorContent", editor.innerHTML);
+        });
+
+        // Apply formatting
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        // Download as DOCX
+        function downloadDocx() {
+            const { Document, Packer, Paragraph } = window.docx;
+
+            const doc = new Document({
+                sections: [{
+                    children: [new Paragraph({ text: editor.innerText })],
+                }],
+            });
+
+            Packer.toBlob(doc).then(blob => {
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "document.docx";
+                link.click();
+            });
+        }
+    </script>
+
+</body>
+</html>
