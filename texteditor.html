@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prøve Tekst Editor</title>
+    <title>Forbedret Teksteditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #fff;
+            color: #000;
+            transition: background 0.3s, color 0.3s;
+        }
         .editor { 
             width: 80%; 
             min-height: 300px; 
@@ -15,13 +21,28 @@
             padding: 10px; 
             outline: none;
             white-space: pre-wrap;
+            background-color: white;
+            transition: background 0.3s, color 0.3s;
         }
-        .toolbar button, .toolbar select { margin: 5px; padding: 5px; }
+        .toolbar button, .toolbar select, .toolbar input { 
+            margin: 5px; 
+            padding: 5px; 
+        }
+        /* Mørk modus */
+        .dark-mode {
+            background-color: #121212;
+            color: white;
+        }
+        .dark-mode .editor {
+            background-color: #333;
+            color: white;
+            border-color: #555;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Prøve tekst editor</h2>
+    <h2>Forbedret Teksteditor</h2>
     
     <!-- Verktøylinje -->
     <div class="toolbar">
@@ -29,21 +50,35 @@
         <button onclick="document.execCommand('italic', false, null)">Kursiv</button>
         <button onclick="document.execCommand('underline', false, null)">Understreket</button>
         
-        <select onchange="formatSize(this.value)">
+        <select onchange="document.execCommand('fontSize', false, this.value)">
             <option value="3">Normal</option>
             <option value="5">Overskrift</option>
             <option value="2">Liten tekst</option>
         </select>
 
-        <button onclick="document.execCommand('insertUnorderedList', false, null)">• Punktliste</button>
-        <button onclick="document.execCommand('insertOrderedList', false, null)">1. Nummerert liste</button>
+        <select onchange="document.execCommand('fontName', false, this.value)">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Verdana">Verdana</option>
+        </select>
+
+        <button onclick="document.execCommand('justifyLeft', false, null)">Venstrejustert</button>
+        <button onclick="document.execCommand('justifyCenter', false, null)">Sentrert</button>
+        <button onclick="document.execCommand('justifyRight', false, null)">Høyrejustert</button>
+        <button onclick="document.execCommand('justifyFull', false, null)">Blokkjustert</button>
+
+        <input type="color" onchange="document.execCommand('foreColor', false, this.value)" title="Velg tekstfarge">
+        <input type="color" onchange="document.execCommand('hiliteColor', false, this.value)" title="Velg bakgrunnsfarge">
+        
+        <button onclick="document.execCommand('removeFormat', false, null)">Fjern formatering</button>
     </div>
 
     <!-- Teksteditor -->
     <div id="editor" class="editor" contenteditable="true"></div>
 
     <br>
-    <button onclick="downloadDocx()">Last ned DOCX</button>
+    <button onclick="toggleDarkMode()">🌙 Aktiver/deaktiver mørk modus</button>
 
     <script>
         const editor = document.getElementById("editor");
@@ -56,115 +91,21 @@
             localStorage.setItem("textEditorContent", editor.innerHTML);
         });
 
-        // Endre tekststørrelse
-        function formatSize(size) {
-            document.execCommand("fontSize", false, size);
+        // Mørk modus funksjon
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+
+            // Lagre mørk modus-status i LocalStorage
+            if (document.body.classList.contains("dark-mode")) {
+                localStorage.setItem("darkMode", "enabled");
+            } else {
+                localStorage.setItem("darkMode", "disabled");
+            }
         }
 
-        // Få dagens dato i format YYYY-MM-DD
-        function getFormattedDate() {
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, "0");
-            const dd = String(today.getDate()).padStart(2, "0");
-            return `${yyyy}-${mm}-${dd}`;
-        }
-
-        // Last ned som DOCX med riktig struktur
-        function downloadDocx() {
-            const zip = new JSZip();
-            const wordFolder = zip.folder("word");
-            const relsFolder = zip.folder("_rels");
-            const wordRelsFolder = zip.folder("word/_rels");
-            const docPropsFolder = zip.folder("docProps");
-
-            // Generer DOCX-struktur
-            wordFolder.file("document.xml", generateDocXml());
-            relsFolder.file(".rels", generateRelsXml());
-            wordRelsFolder.file("document.xml.rels", generateWordRelsXml());
-            docPropsFolder.file("core.xml", generateCoreXml());
-            docPropsFolder.file("app.xml", generateAppXml());
-
-            // [Content_Types].xml
-            zip.file("[Content_Types].xml", generateContentTypesXml());
-
-            // Lagre DOCX
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                const filename = `prove-${getFormattedDate()}.docx`;
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(content);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        }
-
-        // Generer document.xml med riktig Word XML-format
-        function generateDocXml() {
-            let textContent = editor.innerText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            return `
-                <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-                    <w:body>
-                        <w:p>
-                            <w:r>
-                                <w:t>${textContent}</w:t>
-                            </w:r>
-                        </w:p>
-                    </w:body>
-                </w:document>
-            `;
-        }
-
-        // XML for _rels/.rels
-        function generateRelsXml() {
-            return `
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-                    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-                </Relationships>
-            `;
-        }
-
-        // XML for word/_rels/document.xml.rels
-        function generateWordRelsXml() {
-            return `
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>
-            `;
-        }
-
-        // XML for docProps/core.xml
-        function generateCoreXml() {
-            return `
-                <?xml version="1.0" encoding="UTF-8"?>
-                <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties">
-                    <dc:title>Prøve Dokument</dc:title>
-                    <dc:creator>Bruker</dc:creator>
-                    <cp:revision>1</cp:revision>
-                </cp:coreProperties>
-            `;
-        }
-
-        // XML for docProps/app.xml
-        function generateAppXml() {
-            return `
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties">
-                    <Application>Custom Editor</Application>
-                </Properties>
-            `;
-        }
-
-        // XML for [Content_Types].xml
-        function generateContentTypesXml() {
-            return `
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-                    <Default Extension="xml" ContentType="application/xml"/>
-                    <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-                </Types>
-            `;
+        // Sjekk om mørk modus var aktivert tidligere
+        if (localStorage.getItem("darkMode") === "enabled") {
+            document.body.classList.add("dark-mode");
         }
     </script>
 
