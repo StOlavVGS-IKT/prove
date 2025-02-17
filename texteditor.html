@@ -120,8 +120,8 @@
         <!-- Mørk modus-knapp -->
         <button onclick="toggleDarkMode()">🌙 Mørk modus</button>
 
-        <!-- Nedlastning som TXT -->
-        <button onclick="downloadTxt()">📥 Last ned TXT</button>
+        <!-- Nedlastning som HTML -->
+        <button onclick="downloadHtml()">📥 Last ned HTML</button>
     </div>
 
     <!-- Teksteditor -->
@@ -166,12 +166,12 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
-        // TXT-nedlasting
-        function downloadTxt() {
-            const content = editor.innerText; // Hent tekstinnhold uten HTML
+        // HTML-nedlasting
+        function downloadHtml() {
+            const content = editor.innerHTML; // Hent HTML-innhold (beholder formatering)
 
-            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-            const filename = `prove-${getFormattedDate()}.txt`; // Legger til dagens dato i filnavnet
+            const blob = new Blob([content], { type: "text/html;charset=utf-8" });
+            const filename = `prove-${getFormattedDate()}.html`; // Legger til dagens dato i filnavnet
 
             saveAs(blob, filename); // Bruker FileSaver.js for å lagre filen
         }
