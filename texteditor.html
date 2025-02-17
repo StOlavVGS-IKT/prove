@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prøve Teksteditor</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <title>Forbedret Teksteditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         body { 
@@ -121,8 +120,8 @@
         <!-- Mørk modus-knapp -->
         <button onclick="toggleDarkMode()">🌙 Mørk modus</button>
 
-        <!-- Nedlastning som DOCX -->
-        <button onclick="downloadDocx()">📥 Last ned DOCX</button>
+        <!-- Nedlastning som TXT -->
+        <button onclick="downloadTxt()">📥 Last ned TXT</button>
     </div>
 
     <!-- Teksteditor -->
@@ -167,56 +166,14 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
-        // DOCX-nedlasting
-        function downloadDocx() {
-            const content = `
-                <html>
-                <head><meta charset='utf-8'></head>
-                <body>${editor.innerHTML}</body>
-                </html>
-            `;
+        // TXT-nedlasting
+        function downloadTxt() {
+            const content = editor.innerText; // Hent tekstinnhold uten HTML
 
-            const zip = new JSZip();
-            
-            // Generer document.xml
-            const documentXml = generateDocXml(content);
-            zip.folder("word").file("document.xml", documentXml);
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const filename = `prove-${getFormattedDate()}.txt`; // Legger til dagens dato i filnavnet
 
-            // Legg til [Content_Types].xml
-            const contentTypesXml = generateContentTypesXml();
-            zip.file("[Content_Types].xml", contentTypesXml);
-
-            // Generer ZIP-fil og last den ned
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                const filename = `prove-${getFormattedDate()}.docx`; // Legger til dagens dato
-                saveAs(content, filename);
-            });
-        }
-
-        // XML-innhold for DOCX
-        function generateDocXml(content) {
-            return `
-                <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-                    <w:body>
-                        <w:p>
-                            <w:r>
-                                <w:t>${content}</w:t>
-                            </w:r>
-                        </w:p>
-                    </w:body>
-                </w:document>
-            `;
-        }
-
-        // XML for [Content_Types].xml
-        function generateContentTypesXml() {
-            return `
-                <?xml version="1.0" encoding="UTF-8"?>
-                <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-                    <Default Extension="xml" ContentType="application/xml"/>
-                    <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-                </Types>
-            `;
+            saveAs(blob, filename); // Bruker FileSaver.js for å lagre filen
         }
     </script>
 
