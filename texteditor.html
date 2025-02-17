@@ -11,32 +11,79 @@
             text-align: center; 
             background-color: #fff;
             color: #000;
+            margin: 0;
+            padding: 0;
             transition: background 0.3s, color 0.3s;
         }
-        .editor { 
-            width: 80%; 
-            min-height: 300px; 
-            margin: 20px auto; 
-            border: 1px solid #ccc; 
-            padding: 10px; 
+
+        /* Sticky verktøylinje */
+        .toolbar {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            z-index: 1000;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .toolbar button, .toolbar select, .toolbar input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: 0.2s;
+            border-radius: 5px;
+        }
+
+        .toolbar button:hover, .toolbar select:hover {
+            background: #e0e0e0;
+        }
+
+        .editor-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .editor {
+            width: 80%;
+            min-height: 400px;
+            padding: 15px;
+            border: 1px solid #ccc;
             outline: none;
             white-space: pre-wrap;
             background-color: white;
             transition: background 0.3s, color 0.3s;
+            text-align: left;
+            overflow-y: auto;
         }
-        .toolbar button, .toolbar select, .toolbar input { 
-            margin: 5px; 
-            padding: 5px; 
-        }
+
         /* Mørk modus */
         .dark-mode {
             background-color: #121212;
             color: white;
         }
+
+        .dark-mode .toolbar {
+            background: #222;
+            border-bottom: 1px solid #444;
+        }
+
         .dark-mode .editor {
             background-color: #333;
             color: white;
             border-color: #555;
+        }
+
+        .dark-mode .toolbar button, .dark-mode .toolbar select, .dark-mode .toolbar input {
+            background: #444;
+            color: white;
+            border-color: #666;
         }
     </style>
 </head>
@@ -75,7 +122,9 @@
     </div>
 
     <!-- Teksteditor -->
-    <div id="editor" class="editor" contenteditable="true"></div>
+    <div class="editor-container">
+        <div id="editor" class="editor" contenteditable="true"></div>
+    </div>
 
     <br>
     <button onclick="toggleDarkMode()">🌙 Aktiver/deaktiver mørk modus</button>
