@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forbedret Teksteditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.min.js"></script>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -17,7 +17,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Verktøylinje */
         .toolbar {
             position: sticky;
             top: 0;
@@ -65,7 +64,6 @@
             overflow-y: auto;
         }
 
-        /* Mørk modus */
         .dark-mode {
             background-color: #121212;
             color: white;
@@ -93,7 +91,6 @@
 
     <h2>Forbedret Teksteditor</h2>
     
-    <!-- Verktøylinje -->
     <div class="toolbar">
         <button onclick="document.execCommand('bold', false, null)">Fet</button>
         <button onclick="document.execCommand('italic', false, null)">Kursiv</button>
@@ -118,14 +115,12 @@
 
         <button onclick="document.execCommand('removeFormat', false, null)">Fjern formatering</button>
 
-        <!-- Mørk modus-knapp -->
         <button onclick="toggleDarkMode()">🌙 Mørk modus</button>
 
-        <!-- Nedlastning som DOCX -->
-        <button onclick="downloadDocx()">📥 Last ned DOCX</button>
+        <button onclick="downloadHtml()">📥 Last ned HTML</button>
+        <button onclick="downloadDocx()">📄 Last ned DOCX</button>
     </div>
 
-    <!-- Teksteditor -->
     <div class="editor-container">
         <div id="editor" class="editor" contenteditable="true"></div>
     </div>
@@ -145,7 +140,6 @@
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
 
-            // Lagre mørk modus-status i LocalStorage
             if (document.body.classList.contains("dark-mode")) {
                 localStorage.setItem("darkMode", "enabled");
             } else {
@@ -153,12 +147,10 @@
             }
         }
 
-        // Sjekk om mørk modus var aktivert tidligere
         if (localStorage.getItem("darkMode") === "enabled") {
             document.body.classList.add("dark-mode");
         }
 
-        // Få dagens dato i format YYYY-MM-DD
         function getFormattedDate() {
             const today = new Date();
             const yyyy = today.getFullYear();
@@ -167,40 +159,23 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
-        // Funksjon for å laste ned DOCX
-        function downloadDocx() {
+        // HTML-nedlasting
+        function downloadHtml() {
             const content = editor.innerHTML;
+            const blob = new Blob([content], { type: "text/html;charset=utf-8" });
+            const filename = `prove-${getFormattedDate()}.html`;
+            saveAs(blob, filename);
+        }
 
-            // DOCX-innhold i riktig XML-struktur for Word
-            const docxContent = `
-                <xml version="1.0" encoding="UTF-8"?>
-                <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-                    <w:body>
-                        <w:p>
-                            <w:r>
-                                <w:t>${content.replace(/<\/?[^>]+(>|$)/g, "")}</w:t> <!-- Fjerner HTML-tagger -->
-                            </w:r>
-                        </w:p>
-                    </w:body>
-                </w:document>
-            `;
+        // DOCX-nedlasting
+        function downloadDocx() {
+            const content = document.getElementById("editor").innerHTML;
+            const header = "<html><head><meta charset='UTF-8'></head><body>";
+            const footer = "</body></html>";
+            const fullHtml = header + content + footer;
 
-            // Opprett et ZIP-arkiv for DOCX-formatet
-            const zip = new JSZip();
-
-            // Legg til nødvendige filer for et korrekt DOCX-format
-            zip.file("word/document.xml", docxContent);
-            zip.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8"?>
-                <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-                    <Default Extension="xml" ContentType="application/xml"/>
-                    <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-                </Types>`);
-
-            // Lagre som en DOCX-fil
-            zip.generateAsync({ type: "blob" }).then(function(content) {
-                // Last ned filen
-                saveAs(content, "prove-" + getFormattedDate() + ".docx");
-            });
+            const blob = htmlDocx.asBlob(fullHtml);
+            saveAs(blob, "teksteditor-" + getFormattedDate() + ".docx");
         }
     </script>
 
