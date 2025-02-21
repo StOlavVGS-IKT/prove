@@ -30,7 +30,6 @@
             justify-content: center;
             gap: 8px;
             z-index: 1000;
-            transition: background 0.3s, color 0.3s;
         }
 
         .toolbar button, .toolbar select {
@@ -38,7 +37,6 @@
             border: 1px solid #ddd;
             background: #f9f9f9;
             cursor: pointer;
-            transition: 0.2s;
             border-radius: 5px;
             font-size: 14px;
         }
@@ -55,26 +53,24 @@
 
         .editor {
             width: 210mm;  /* A4 width */
-            padding: 20mm 15mm; /* Set margins (top-bottom, left-right) */
+            padding: 20mm 15mm;
             background-color: white;
-            transition: background 0.3s, color 0.3s;
             text-align: left;
             overflow-y: auto;
-            box-sizing: border-box; /* Ensure padding is included in total width/height */
-            page-break-after: always; /* Page break after each print */
-            border: none; /* Remove the external border */
+            box-sizing: border-box;
+            border: none;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* For fixed width table */
+            table-layout: fixed;
         }
 
         th, td {
             padding: 10px;
-            border: 1px solid #ddd; /* Add border to table cells */
-            position: relative; /* To enable resizing */
+            border: 1px solid #ddd;
+            position: relative;
         }
 
         th {
@@ -100,6 +96,20 @@
             background: #444;
             color: white;
             border-color: #666;
+        }
+
+        /* Løsning for PDF-sideskift */
+        .editor, table, p, h1, h2, h3, h4, h5, h6 {
+            page-break-inside: avoid;
+        }
+
+        table {
+            page-break-before: auto;
+            page-break-after: auto;
+        }
+
+        .page-break {
+            page-break-before: always;
         }
     </style>
 </head>
@@ -182,16 +192,15 @@
         function downloadPdf() {
             const element = document.getElementById("editor");
 
-            // Konfigurasjoner for PDF
             const options = {
-                margin: 0, // Fjerner ytterkantene for PDF
+                margin: [10, 10, 10, 10],
                 filename: `tekst-${getFormattedDate()}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
 
-            // Generer PDF
             html2pdf().from(element).set(options).save();
         }
 
@@ -209,8 +218,6 @@
                 }
                 table += '</table>';
                 document.execCommand('insertHTML', false, table);
-            } else {
-                alert("Vennligst oppgi gyldige tall for rader og kolonner.");
             }
         }
     </script>
