@@ -98,7 +98,7 @@
         <button onclick="document.execCommand('italic', false, null)">Kursiv</button>
         <button onclick="document.execCommand('underline', false, null)">Understreket</button>
         
-        <select onchange="document.execCommand('fontSize', false, this.value)">
+        <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
             <option value="10">10</option>
             <option value="11">11</option>
             <option value="12">12</option>
@@ -150,6 +150,10 @@
                 document.body.classList.add("dark-mode");
             }
         });
+
+        function changeFontSize(size) {
+            document.execCommand('fontSize', false, size);
+        }
 
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
