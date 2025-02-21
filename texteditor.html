@@ -55,17 +55,14 @@
 
         .editor {
             width: 210mm;  /* A4 width */
-            height: auto; /* Allow height to expand */
             padding: 20mm 15mm; /* Set margins (top-bottom, left-right) */
-            border: 1px solid #ccc;
-            outline: none;
-            white-space: pre-wrap;
             background-color: white;
             transition: background 0.3s, color 0.3s;
             text-align: left;
             overflow-y: auto;
             box-sizing: border-box; /* Ensure padding is included in total width/height */
             page-break-after: always; /* Page break after each print */
+            border: none; /* Remove the external border */
         }
 
         table {
@@ -76,22 +73,12 @@
 
         th, td {
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd; /* Add border to table cells */
             position: relative; /* To enable resizing */
         }
 
         th {
             background-color: #f2f2f2;
-        }
-
-        th::after, td::after {
-            content: '';
-            width: 10px; /* Width of the resize handle */
-            height: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-            cursor: ew-resize;
         }
 
         .dark-mode {
@@ -107,7 +94,6 @@
         .dark-mode .editor {
             background-color: #333;
             color: white;
-            border-color: #555;
         }
 
         .dark-mode .toolbar button, .dark-mode .toolbar select {
@@ -198,7 +184,7 @@
 
             // Konfigurasjoner for PDF
             const options = {
-                margin: 1,
+                margin: 0, // Fjerner ytterkantene for PDF
                 filename: `tekst-${getFormattedDate()}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
