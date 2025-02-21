@@ -56,7 +56,7 @@
             width: 80%;
             min-height: 400px;
             padding: 15px;
-            border: 1px solid #ccc;
+            border: none;
             outline: none;
             white-space: pre-wrap;
             background-color: white;
@@ -98,17 +98,17 @@
         <button onclick="document.execCommand('underline', false, null)">Understreket</button>
         
         <select onchange="document.execCommand('fontSize', false, this.value)">
-            <option value="2">10</option>
-            <option value="3">11</option>
-            <option value="4">12</option>
-            <option value="5">13</option>
-            <option value="6">14</option>
-            <option value="7">15</option>
-            <option value="8">16</option>
-            <option value="9">17</option>
-            <option value="10">18</option>
-            <option value="11">19</option>
-            <option value="12">20</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
         </select>
 
         <select onchange="document.execCommand('fontName', false, this.value)">
@@ -170,13 +170,11 @@
         }
 
         function downloadPdf() {
-            html2canvas(document.getElementById("editor")).then(canvas => {
-                const imgData = canvas.toDataURL("image/png");
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF("p", "mm", "a4");
-                doc.addImage(imgData, "PNG", 10, 10, 180, 0);
-                doc.save(`tekst-${getFormattedDate()}.pdf`);
-            });
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF("p", "mm", "a4");
+            doc.setFontSize(12);
+            doc.text(document.getElementById("editor").innerText, 10, 10);
+            doc.save(`tekst-${getFormattedDate()}.pdf`);
         }
     </script>
 </body>
