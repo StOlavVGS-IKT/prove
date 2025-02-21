@@ -55,13 +55,15 @@
 
         .editor {
             width: 210mm;  /* A4 width */
+            height: auto; /* Set height to auto */
+            min-height: 297mm; /* Ensure at least A4 height */
             padding: 20mm 15mm; /* Set margins (top-bottom, left-right) */
             background-color: white;
             transition: background 0.3s, color 0.3s;
             text-align: left;
             overflow-y: auto;
             box-sizing: border-box; /* Ensure padding is included in total width/height */
-            page-break-after: always; /* Page break after each print */
+            page-break-after: auto; /* Page break after each print */
             border: none; /* Remove the external border */
         }
 
@@ -113,13 +115,17 @@
         <button onclick="document.execCommand('underline', false, null)">Understreket</button>
         
         <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
-            <option value="1">10</option>
-            <option value="2">11</option>
-            <option value="3">12</option>
-            <option value="4">13</option>
-            <option value="5">14</option>
-            <option value="6">15</option>
-            <option value="7">16</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
         </select>
 
         <select onchange="document.execCommand('fontName', false, this.value)">
