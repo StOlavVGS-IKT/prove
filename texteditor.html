@@ -200,7 +200,15 @@
             };
 
             // Generer PDF
-            html2pdf().from(element).set(options).save();
+            html2pdf()
+                .from(element)
+                .set(options)
+                .outputPdf()
+                .then((pdf) => {
+                    // Fix for adding page breaks and ensuring content fits
+                    pdf.autoPrint(); // Auto print
+                    pdf.save(`tekst-${getFormattedDate()}.pdf`); // Save PDF
+                });
         }
 
         function insertTable() {
