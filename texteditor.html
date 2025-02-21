@@ -54,7 +54,7 @@
         }
 
         .editor {
-            width: 210mm;  /* A4 width */
+            width: 210mm; /* A4 width */
             min-height: 297mm; /* Ensure at least A4 height */
             padding: 20mm 15mm; /* Set margins (top-bottom, left-right) */
             background-color: white;
@@ -64,13 +64,12 @@
             box-sizing: border-box; /* Ensure padding is included in total width/height */
             page-break-after: auto; /* Page break after each print */
             line-height: 1.5; /* Set line height to 1.5 */
-            margin: 0; /* Remove external margin */
             border: none; /* Remove the external border */
         }
 
         @media print {
             .editor {
-                margin: 20mm 0; /* Set print margins for top and bottom */
+                margin: 20mm 15mm; /* Set print margins for top, bottom, left, and right */
             }
         }
 
@@ -193,7 +192,7 @@
 
             // Konfigurasjoner for PDF
             const options = {
-                margin: 0, // Fjerner ytterkantene for PDF
+                margin: { top: 20, bottom: 20, left: 15, right: 15 }, // Definer A4-margene
                 filename: `tekst-${getFormattedDate()}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
