@@ -54,22 +54,15 @@
         }
 
         .editor {
-            width: 210mm; /* A4 width */
-            min-height: 297mm; /* Ensure at least A4 height */
+            width: 210mm;  /* A4 width */
             padding: 20mm 15mm; /* Set margins (top-bottom, left-right) */
             background-color: white;
             transition: background 0.3s, color 0.3s;
             text-align: left;
             overflow-y: auto;
             box-sizing: border-box; /* Ensure padding is included in total width/height */
-            line-height: 1.5; /* Set line height to 1.5 */
+            page-break-after: always; /* Page break after each print */
             border: none; /* Remove the external border */
-        }
-
-        @media print {
-            .editor {
-                margin: 20mm 15mm; /* Set print margins for top, bottom, left, and right */
-            }
         }
 
         table {
@@ -81,6 +74,7 @@
         th, td {
             padding: 10px;
             border: 1px solid #ddd; /* Add border to table cells */
+            position: relative; /* To enable resizing */
         }
 
         th {
@@ -184,13 +178,13 @@
             const today = new Date();
             return today.toISOString().split('T')[0];
         }
-        
+
         function downloadPdf() {
             const element = document.getElementById("editor");
 
             // Konfigurasjoner for PDF
             const options = {
-                margin: { top: 20, bottom: 20, left: 15, right: 15 }, // Definer A4-margene
+                margin: 0, // Fjerner ytterkantene for PDF
                 filename: `tekst-${getFormattedDate()}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
@@ -198,13 +192,7 @@
             };
 
             // Generer PDF
-            html2pdf()
-                .from(element)
-                .set(options)
-                .save() // Lagre PDF
-                .catch((error) => {
-                    console.error("PDF generering feilet:", error);
-                });
+            html2pdf().from(element).set(options).save();
         }
 
         function insertTable() {
