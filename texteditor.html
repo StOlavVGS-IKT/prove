@@ -6,6 +6,7 @@
     <title>Forbedret Teksteditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -85,15 +86,6 @@
             color: white;
             border-color: #666;
         }
-
-        .footer {
-            margin-top: 20px;
-            padding: 10px;
-            background: #f1f1f1;
-            color: #333;
-            text-align: center;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
@@ -106,9 +98,17 @@
         <button onclick="document.execCommand('underline', false, null)">Understreket</button>
         
         <select onchange="document.execCommand('fontSize', false, this.value)">
-            <option value="3">Normal</option>
-            <option value="5">Overskrift</option>
-            <option value="2">Liten tekst</option>
+            <option value="2">10</option>
+            <option value="3">11</option>
+            <option value="4">12</option>
+            <option value="5">13</option>
+            <option value="6">14</option>
+            <option value="7">15</option>
+            <option value="8">16</option>
+            <option value="9">17</option>
+            <option value="10">18</option>
+            <option value="11">19</option>
+            <option value="12">20</option>
         </select>
 
         <select onchange="document.execCommand('fontName', false, this.value)">
@@ -133,8 +133,6 @@
     <div class="editor-container">
         <div id="editor" class="editor" contenteditable="true"></div>
     </div>
-
-    <div class="footer">© St.Olav</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -172,12 +170,13 @@
         }
 
         function downloadPdf() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const text = document.getElementById("editor").innerText;
-            doc.text(text, 10, 10, { maxWidth: 180 });
-            doc.text("© St.Olav", 10, doc.internal.pageSize.height - 10);
-            doc.save(`tekst-${getFormattedDate()}.pdf`);
+            html2canvas(document.getElementById("editor")).then(canvas => {
+                const imgData = canvas.toDataURL("image/png");
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF("p", "mm", "a4");
+                doc.addImage(imgData, "PNG", 10, 10, 180, 0);
+                doc.save(`tekst-${getFormattedDate()}.pdf`);
+            });
         }
     </script>
 </body>
