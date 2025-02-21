@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forbedret Teksteditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -118,7 +118,7 @@
         <button onclick="toggleDarkMode()">🌙 Mørk modus</button>
 
         <button onclick="downloadHtml()">📥 Last ned HTML</button>
-        <button onclick="downloadDocx()">📄 Last ned DOCX</button>
+        <button onclick="downloadPdf()">📄 Last ned PDF</button>
     </div>
 
     <div class="editor-container">
@@ -128,15 +128,12 @@
     <script>
         const editor = document.getElementById("editor");
 
-        // Last inn lagret innhold
         editor.innerHTML = localStorage.getItem("textEditorContent") || "Her kan du skrive...";
 
-        // Lagre innhold i LocalStorage
         editor.addEventListener("input", () => {
             localStorage.setItem("textEditorContent", editor.innerHTML);
         });
 
-        // Mørk modus funksjon
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
 
@@ -159,7 +156,6 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
-        // HTML-nedlasting
         function downloadHtml() {
             const content = editor.innerHTML;
             const blob = new Blob([content], { type: "text/html;charset=utf-8" });
@@ -167,15 +163,11 @@
             saveAs(blob, filename);
         }
 
-        // DOCX-nedlasting
-        function downloadDocx() {
-            const content = document.getElementById("editor").innerHTML;
-            const header = "<html><head><meta charset='UTF-8'></head><body>";
-            const footer = "</body></html>";
-            const fullHtml = header + content + footer;
-
-            const blob = htmlDocx.asBlob(fullHtml);
-            saveAs(blob, "teksteditor-" + getFormattedDate() + ".docx");
+        function downloadPdf() {
+            const {{ jsPDF }} = window.jspdf;
+            const doc = new jsPDF();
+            doc.text(editor.innerText, 10, 10);
+            doc.save(`teksteditor-${getFormattedDate()}.pdf`);
         }
     </script>
 
