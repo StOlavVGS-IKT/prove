@@ -62,7 +62,6 @@
             text-align: left;
             overflow-y: auto;
             box-sizing: border-box; /* Ensure padding is included in total width/height */
-            page-break-after: auto; /* Page break after each print */
             line-height: 1.5; /* Set line height to 1.5 */
             border: none; /* Remove the external border */
         }
@@ -82,7 +81,6 @@
         th, td {
             padding: 10px;
             border: 1px solid #ddd; /* Add border to table cells */
-            position: relative; /* To enable resizing */
         }
 
         th {
@@ -203,12 +201,7 @@
             html2pdf()
                 .from(element)
                 .set(options)
-                .outputPdf()
-                .then((pdf) => {
-                    // Fix for adding page breaks and ensuring content fits
-                    pdf.autoPrint(); // Auto print
-                    pdf.save(`tekst-${getFormattedDate()}.pdf`); // Save PDF
-                });
+                .save(); // Lagre PDF
         }
 
         function insertTable() {
