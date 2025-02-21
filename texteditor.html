@@ -63,10 +63,15 @@
             overflow-y: auto;
             box-sizing: border-box; /* Ensure padding is included in total width/height */
             page-break-after: auto; /* Page break after each print */
-            border: none; /* Remove the external border */
             line-height: 1.5; /* Set line height to 1.5 */
-            margin-top: 20mm; /* Add top margin */
-            margin-bottom: 20mm; /* Add bottom margin */
+            margin: 0; /* Remove external margin */
+            border: none; /* Remove the external border */
+        }
+
+        @media print {
+            .editor {
+                margin: 20mm 0; /* Set print margins for top and bottom */
+            }
         }
 
         table {
