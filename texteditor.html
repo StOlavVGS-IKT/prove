@@ -121,6 +121,8 @@
 
         <button onclick="document.execCommand('insertUnorderedList', false, null)">Kulepunkter</button>
         <button onclick="document.execCommand('insertOrderedList', false, null)">Nummerert liste</button>
+        
+        <button onclick="insertTable()">Sett inn tabell</button>
 
         <button onclick="document.execCommand('removeFormat', false, null)">Fjern formatering</button>
 
@@ -182,11 +184,30 @@
                 filename: `tekst-${getFormattedDate()}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             // Generer PDF
             html2pdf().from(element).set(options).save();
+        }
+
+        function insertTable() {
+            const rows = prompt("Hvor mange rader vil du ha i tabellen?", "2");
+            const cols = prompt("Hvor mange kolonner vil du ha i tabellen?", "2");
+            if (rows > 0 && cols > 0) {
+                let table = '<table border="1" style="width:100%; border-collapse: collapse;">';
+                for (let i = 0; i < rows; i++) {
+                    table += '<tr>';
+                    for (let j = 0; j < cols; j++) {
+                        table += '<td style="padding: 10px;"></td>';
+                    }
+                    table += '</tr>';
+                }
+                table += '</table>';
+                document.execCommand('insertHTML', false, table);
+            } else {
+                alert("Vennligst oppgi gyldige tall for rader og kolonner.");
+            }
         }
     </script>
 </body>
