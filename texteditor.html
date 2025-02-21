@@ -99,13 +99,13 @@
         <button onclick="document.execCommand('underline', false, null)">Understreket</button>
         
         <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
-            <option value="1">10</option>
-            <option value="2">11</option>
-            <option value="3">12</option>
-            <option value="4">13</option>
-            <option value="5">14</option>
-            <option value="6">15</option>
-            <option value="7">16</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
         </select>
 
         <select onchange="document.execCommand('fontName', false, this.value)">
@@ -118,6 +118,9 @@
         <button onclick="document.execCommand('justifyLeft', false, null)">Venstrejustert</button>
         <button onclick="document.execCommand('justifyCenter', false, null)">Sentrert</button>
         <button onclick="document.execCommand('justifyRight', false, null)">Høyrejustert</button>
+
+        <button onclick="document.execCommand('insertUnorderedList', false, null)">Kulepunkter</button>
+        <button onclick="document.execCommand('insertOrderedList', false, null)">Nummerert liste</button>
 
         <button onclick="document.execCommand('removeFormat', false, null)">Fjern formatering</button>
 
