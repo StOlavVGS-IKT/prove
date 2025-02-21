@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prove Teksteditor</title>
+    <title>Forbedret Teksteditor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -85,11 +85,20 @@
             color: white;
             border-color: #666;
         }
+
+        .footer {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f1f1f1;
+            color: #333;
+            text-align: center;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Prøve Teksteditor</h2>
+    <h2>Forbedret Teksteditor</h2>
     
     <div class="toolbar">
         <button onclick="document.execCommand('bold', false, null)">Fet</button>
@@ -125,53 +134,51 @@
         <div id="editor" class="editor" contenteditable="true"></div>
     </div>
 
-     <div class="footer">© St.Olav</div>
+    <div class="footer">© St.Olav</div>
 
     <script>
-        const editor = document.getElementById("editor");
+        document.addEventListener("DOMContentLoaded", () => {
+            const editor = document.getElementById("editor");
+            const savedContent = localStorage.getItem("textEditorContent");
+            if (savedContent) {
+                editor.innerHTML = savedContent;
+            }
+            editor.addEventListener("input", () => {
+                localStorage.setItem("textEditorContent", editor.innerHTML);
+            });
 
-        editor.innerHTML = localStorage.getItem("textEditorContent") || "Her kan du skrive...";
-
-        editor.addEventListener("input", () => {
-            localStorage.setItem("textEditorContent", editor.innerHTML);
+            if (localStorage.getItem("darkMode") === "enabled") {
+                document.body.classList.add("dark-mode");
+            }
         });
 
         function toggleDarkMode() {
             document.body.classList.toggle("dark-mode");
-
-            if (document.body.classList.contains("dark-mode")) {
-                localStorage.setItem("darkMode", "enabled");
-            } else {
-                localStorage.setItem("darkMode", "disabled");
-            }
-        }
-
-        if (localStorage.getItem("darkMode") === "enabled") {
-            document.body.classList.add("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
         }
 
         function getFormattedDate() {
             const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, "0");
-            const dd = String(today.getDate()).padStart(2, "0");
-            return `${yyyy}-${mm}-${dd}`;
+            return today.toISOString().split('T')[0];
         }
 
         function downloadHtml() {
-            const content = editor.innerHTML;
-            const blob = new Blob([content], { type: "text/html;charset=utf-8" });
-            const filename = `prove-${getFormattedDate()}.html`;
-            saveAs(blob, filename);
+            const content = document.getElementById("editor").innerHTML;
+            const blob = new Blob([content], { type: "text/html" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `tekst-${getFormattedDate()}.html`;
+            a.click();
         }
 
         function downloadPdf() {
-            const {{ jsPDF }} = window.jspdf;
+            const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            doc.text(editor.innerText, 10, 10);
-            doc.save(`teksteditor-${getFormattedDate()}.pdf`);
+            const text = document.getElementById("editor").innerText;
+            doc.text(text, 10, 10, { maxWidth: 180 });
+            doc.text("© St.Olav", 10, doc.internal.pageSize.height - 10);
+            doc.save(`tekst-${getFormattedDate()}.pdf`);
         }
     </script>
-
 </body>
 </html>
