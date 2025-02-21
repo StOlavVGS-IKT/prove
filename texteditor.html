@@ -201,7 +201,10 @@
             html2pdf()
                 .from(element)
                 .set(options)
-                .save(); // Lagre PDF
+                .save() // Lagre PDF
+                .catch((error) => {
+                    console.error("PDF generering feilet:", error);
+                });
         }
 
         function insertTable() {
