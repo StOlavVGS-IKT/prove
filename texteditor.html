@@ -154,8 +154,8 @@
 
         <button onclick="downloadPdf()">📄 Last ned PDF</button>
         
-        <!-- Add a button to read the editor content -->
-        <button onclick="readText()">🎧 Les teksten</button>
+        <!-- Add a button to read the selected text -->
+        <button onclick="readSelectedText()">🎧 Les merket tekst</button>
         <!-- Add a button to stop reading the text -->
         <button onclick="stopReading()">⏹️ Stopp lesing</button>
     </div>
@@ -171,21 +171,13 @@
             const editor = document.getElementById("editor");
             const savedContent = localStorage.getItem("textEditorContent");
 
-            // Når tekst er lagret, bruk innerHTML for å unngå HTML-strukturproblemer
             if (savedContent) {
                 editor.innerHTML = savedContent;
             }
 
             editor.addEventListener("input", () => {
-                // Lagre tekstinnhold som ren tekst uten HTML-tagging
                 let content = editor.textContent; // Bruk textContent for å hente ren tekst
-
-                // Legg til linjeskift som <p> dersom nødvendig
-                content = content.replace(/\n/g, "<p></p>");
-
-                // Lagre tekstinnholdet som HTML for fremtidig visning
-                editor.innerHTML = content;
-
+                editor.innerHTML = content; // Lagre tekst som ren HTML
                 localStorage.setItem("textEditorContent", content);
             });
 
@@ -240,13 +232,19 @@
             }
         }
 
-        // Function to read the text in the editor using the SpeechSynthesis API
-        function readText() {
-            const text = document.getElementById("editor").textContent; // Use textContent here
+        // Function to read the selected text using the SpeechSynthesis API
+        function readSelectedText() {
+            const selectedText = window.getSelection().toString(); // Get selected text
+
+            if (!selectedText) {
+                alert("Ingen tekst valgt. Vennligst marker tekst først.");
+                return;  // Exit if no text is selected
+            }
+
             if (currentUtterance && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();  // Stop previous speech if it's still running
             }
-            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance = new SpeechSynthesisUtterance(selectedText);
             window.speechSynthesis.speak(currentUtterance);
         }
 
