@@ -178,7 +178,7 @@
 
             editor.addEventListener("input", () => {
                 // Lagre tekstinnhold som ren tekst uten HTML-tagging
-                let content = editor.innerText;
+                let content = editor.textContent; // Bruk textContent for å hente ren tekst
 
                 // Legg til linjeskift som <p> dersom nødvendig
                 content = content.replace(/\n/g, "<p></p>");
@@ -242,7 +242,7 @@
 
         // Function to read the text in the editor using the SpeechSynthesis API
         function readText() {
-            const text = document.getElementById("editor").innerText;
+            const text = document.getElementById("editor").textContent; // Use textContent here
             if (currentUtterance && window.speechSynthesis.speaking) {
                 window.speechSynthesis.cancel();  // Stop previous speech if it's still running
             }
