@@ -59,6 +59,7 @@
             overflow-y: auto;
             box-sizing: border-box;
             border: none;
+            outline: none;
         }
 
         table {
@@ -155,6 +156,8 @@
         
         <!-- Add a button to read the editor content -->
         <button onclick="readText()">🎧 Les teksten</button>
+        <!-- Add a button to stop reading the text -->
+        <button onclick="stopReading()">⏹️ Stopp lesing</button>
     </div>
 
     <div class="editor-container">
@@ -162,6 +165,8 @@
     </div>
 
     <script>
+        let currentUtterance = null;  // Variable to hold the current speech synthesis utterance
+
         document.addEventListener("DOMContentLoaded", () => {
             const editor = document.getElementById("editor");
             const savedContent = localStorage.getItem("textEditorContent");
@@ -169,7 +174,13 @@
                 editor.innerHTML = savedContent;
             }
             editor.addEventListener("input", () => {
+                // Automatically wrap content in <p> tags as user types
+                let content = editor.innerHTML;
+                content = content.replace(/(?:\r\n|\r|\n)/g, "<p></p>");
+                editor.innerHTML = content;
                 localStorage.setItem("textEditorContent", editor.innerHTML);
+                // Ensure focus stays on the editor for screen readers
+                editor.focus();
             });
 
             if (localStorage.getItem("darkMode") === "enabled") {
@@ -226,8 +237,18 @@
         // Function to read the text in the editor using the SpeechSynthesis API
         function readText() {
             const text = document.getElementById("editor").innerText;
-            const speech = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(speech);
+            if (currentUtterance && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();  // Stop previous speech if it's still running
+            }
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        // Function to stop the speech synthesis
+        function stopReading() {
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();  // Stops the reading
+            }
         }
     </script>
 </body>
