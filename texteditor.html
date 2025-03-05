@@ -60,6 +60,7 @@
             box-sizing: border-box;
             border: none;
             outline: none;
+            min-height: 300px;
         }
 
         table {
@@ -118,9 +119,9 @@
     <h2>Prøve Editor</h2>
     
     <div class="toolbar">
-        <button onclick="document.execCommand('bold', false, null)">Fet</button>
-        <button onclick="document.execCommand('italic', false, null)">Kursiv</button>
-        <button onclick="document.execCommand('underline', false, null)">Understreket</button>
+        <button onclick="boldText()">Fet</button>
+        <button onclick="italicText()">Kursiv</button>
+        <button onclick="underlineText()">Understreket</button>
         
         <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
             <option value="1">10</option>
@@ -132,23 +133,20 @@
             <option value="7">16</option>
         </select>
 
-        <select onchange="document.execCommand('fontName', false, this.value)">
+        <select onchange="changeFontFamily(this.value)">
             <option value="Arial">Arial</option>
             <option value="Times New Roman">Times New Roman</option>
             <option value="Courier New">Courier New</option>
             <option value="Verdana">Verdana</option>
         </select>
 
-        <button onclick="document.execCommand('justifyLeft', false, null)">Venstrejustert</button>
-        <button onclick="document.execCommand('justifyCenter', false, null)">Sentrert</button>
-        <button onclick="document.execCommand('justifyRight', false, null)">Høyrejustert</button>
+        <button onclick="justifyLeft()">Venstrejustert</button>
+        <button onclick="justifyCenter()">Sentrert</button>
+        <button onclick="justifyRight()">Høyrejustert</button>
 
-        <button onclick="document.execCommand('insertUnorderedList', false, null)">Kulepunkter</button>
-        <button onclick="document.execCommand('insertOrderedList', false, null)">Nummerert liste</button>
-        
         <button onclick="insertTable()">Sett inn tabell</button>
 
-        <button onclick="document.execCommand('removeFormat', false, null)">Fjern formatering</button>
+        <button onclick="removeFormatting()">Fjern formatering</button>
 
         <button onclick="toggleDarkMode()">🌙 Mørk modus</button>
 
@@ -176,9 +174,8 @@
             }
 
             editor.addEventListener("input", () => {
-                let content = editor.textContent; // Bruk textContent for å hente ren tekst
-                editor.innerHTML = content; // Lagre tekst som ren HTML
-                localStorage.setItem("textEditorContent", content);
+                let content = editor.textContent; // Use textContent to handle plain text
+                localStorage.setItem("textEditorContent", content); // Store the raw text
             });
 
             if (localStorage.getItem("darkMode") === "enabled") {
@@ -186,35 +183,47 @@
             }
         });
 
+        // Font size change
         function changeFontSize(size) {
             document.execCommand('fontSize', false, size);
         }
 
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+        // Font family change
+        function changeFontFamily(family) {
+            document.execCommand('fontName', false, family);
         }
 
-        function getFormattedDate() {
-            const today = new Date();
-            return today.toISOString().split('T')[0];
+        // Bold text formatting
+        function boldText() {
+            document.execCommand('bold', false, null);
         }
 
-        function downloadPdf() {
-            const element = document.getElementById("editor");
-
-            const options = {
-                margin: [10, 5, 10, 10],
-                filename: `tekst-${getFormattedDate()}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            html2pdf().from(element).set(options).save();
+        // Italic text formatting
+        function italicText() {
+            document.execCommand('italic', false, null);
         }
 
+        // Underline text formatting
+        function underlineText() {
+            document.execCommand('underline', false, null);
+        }
+
+        // Justify text alignment (left)
+        function justifyLeft() {
+            document.execCommand('justifyLeft', false, null);
+        }
+
+        // Justify text alignment (center)
+        function justifyCenter() {
+            document.execCommand('justifyCenter', false, null);
+        }
+
+        // Justify text alignment (right)
+        function justifyRight() {
+            document.execCommand('justifyRight', false, null);
+        }
+
+        // Insert a table into the editor
         function insertTable() {
             const rows = prompt("Hvor mange rader vil du ha i tabellen?", "2");
             const cols = prompt("Hvor mange kolonner vil du ha i tabellen?", "2");
@@ -230,6 +239,38 @@
                 table += '</table>';
                 document.execCommand('insertHTML', false, table);
             }
+        }
+
+        // Remove all text formatting
+        function removeFormatting() {
+            document.execCommand('removeFormat', false, null);
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+        }
+
+        // Download the editor content as a PDF
+        function downloadPdf() {
+            const element = document.getElementById("editor");
+
+            const options = {
+                margin: [10, 5, 10, 10],
+                filename: `tekst-${getFormattedDate()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            html2pdf().from(element).set(options).save();
+        }
+
+        function getFormattedDate() {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
         }
 
         // Function to read the selected text using the SpeechSynthesis API
