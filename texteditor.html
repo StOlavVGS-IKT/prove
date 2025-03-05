@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prøve Editor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #fff;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .toolbar {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .toolbar button, .toolbar select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .toolbar button:hover, .toolbar select:hover {
+            background: #e0e0e0;
+        }
+
+        .editor-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .editor {
+            width: 210mm;  /* A4 width */
+            padding: 20mm 20mm;
+            background-color: white;
+            text-align: left;
+            overflow-y: auto;
+            box-sizing: border-box;
+            border: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: white;
+        }
+
+        .dark-mode .toolbar {
+            background: #222;
+            border-bottom: 1px solid #444;
+        }
+
+        .dark-mode .editor {
+            background-color: #333;
+            color: white;
+        }
+
+        .dark-mode .toolbar button, .dark-mode .toolbar select {
+            background: #444;
+            color: white;
+            border-color: #666;
+        }
+
+        .editor, table, p, h1, h2, h3, h4, h5, h6 {
+            page-break-inside: avoid;
+        }
+
+        table {
+            page-break-before: auto;
+            page-break-after: auto;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Prøve Editor</h2>
+    
+    <div class="toolbar">
+        <button onclick="document.execCommand('bold', false, null)">Fet</button>
+        <button onclick="document.execCommand('italic', false, null)">Kursiv</button>
+        <button onclick="document.execCommand('underline', false, null)">Understreket</button>
+        
+        <select id="fontSizeSelect" onchange="changeFontSize(this.value)">
+            <option value="1">10</option>
+            <option value="2">11</option>
+            <option value="3">12</option>
+            <option value="4">13</option>
+            <option value="5">14</option>
+            <option value="6">15</option>
+            <option value="7">16</option>
+        </select>
+
+        <select onchange="document.execCommand('fontName', false, this.value)">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Verdana">Verdana</option>
+        </select>
+
+        <button onclick="document.execCommand('justifyLeft', false, null)">Venstrejustert</button>
+        <button onclick="document.execCommand('justifyCenter', false, null)">Sentrert</button>
+        <button onclick="document.execCommand('justifyRight', false, null)">Høyrejustert</button>
+
+        <button onclick="document.execCommand('insertUnorderedList', false, null)">Kulepunkter</button>
+        <button onclick="document.execCommand('insertOrderedList', false, null)">Nummerert liste</button>
+        
+        <button onclick="insertTable()">Sett inn tabell</button>
+
+        <button onclick="document.execCommand('removeFormat', false, null)">Fjern formatering</button>
+
+        <button onclick="toggleDarkMode()">🌙 Mørk modus</button>
+
+        <button onclick="downloadPdf()">📄 Last ned PDF</button>
+        
+        <!-- Add a button to read the editor content -->
+        <button onclick="readText()">🎧 Les teksten</button>
+    </div>
+
+    <div class="editor-container">
+        <div id="editor" class="editor" contenteditable="true" role="document" aria-live="polite"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const editor = document.getElementById("editor");
+            const savedContent = localStorage.getItem("textEditorContent");
+            if (savedContent) {
+                editor.innerHTML = savedContent;
+            }
+            editor.addEventListener("input", () => {
+                localStorage.setItem("textEditorContent", editor.innerHTML);
+            });
+
+            if (localStorage.getItem("darkMode") === "enabled") {
+                document.body.classList.add("dark-mode");
+            }
+        });
+
+        function changeFontSize(size) {
+            document.execCommand('fontSize', false, size);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+        }
+
+        function getFormattedDate() {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
+        }
+
+        function downloadPdf() {
+            const element = document.getElementById("editor");
+
+            const options = {
+                margin: [10, 5, 10, 10],
+                filename: `tekst-${getFormattedDate()}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            html2pdf().from(element).set(options).save();
+        }
+
+        function insertTable() {
+            const rows = prompt("Hvor mange rader vil du ha i tabellen?", "2");
+            const cols = prompt("Hvor mange kolonner vil du ha i tabellen?", "2");
+            if (rows > 0 && cols > 0) {
+                let table = '<table>';
+                for (let i = 0; i < rows; i++) {
+                    table += '<tr>';
+                    for (let j = 0; j < cols; j++) {
+                        table += '<td style="padding: 10px;"></td>';
+                    }
+                    table += '</tr>';
+                }
+                table += '</table>';
+                document.execCommand('insertHTML', false, table);
+            }
+        }
+
+        // Function to read the text in the editor using the SpeechSynthesis API
+        function readText() {
+            const text = document.getElementById("editor").innerText;
+            const speech = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(speech);
+        }
+    </script>
+</body>
+</html>
