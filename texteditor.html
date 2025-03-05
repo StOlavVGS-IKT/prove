@@ -170,17 +170,23 @@
         document.addEventListener("DOMContentLoaded", () => {
             const editor = document.getElementById("editor");
             const savedContent = localStorage.getItem("textEditorContent");
+
+            // Når tekst er lagret, bruk innerHTML for å unngå HTML-strukturproblemer
             if (savedContent) {
                 editor.innerHTML = savedContent;
             }
+
             editor.addEventListener("input", () => {
-                // Automatically wrap content in <p> tags as user types
-                let content = editor.innerHTML;
-                content = content.replace(/(?:\r\n|\r|\n)/g, "<p></p>");
+                // Lagre tekstinnhold som ren tekst uten HTML-tagging
+                let content = editor.innerText;
+
+                // Legg til linjeskift som <p> dersom nødvendig
+                content = content.replace(/\n/g, "<p></p>");
+
+                // Lagre tekstinnholdet som HTML for fremtidig visning
                 editor.innerHTML = content;
-                localStorage.setItem("textEditorContent", editor.innerHTML);
-                // Ensure focus stays on the editor for screen readers
-                editor.focus();
+
+                localStorage.setItem("textEditorContent", content);
             });
 
             if (localStorage.getItem("darkMode") === "enabled") {
